@@ -166,7 +166,7 @@ const Profile = () => {
             <form className=" bg-white shadow-md rounded px-8 pt-6 pb-8 mb-1 " onSubmit={handleSubmit}>
                 {/* {avatar && 
                 //<img src={`data:image/jpeg;base64, ${avatar}`} alt="Avatar" className="w-20 h-20 rounded-full mb-4" />} */}
-                <img src={`data:image/jpeg;base64,${userDetail?.avatar}`} alt="Avatar" className="z-10 shadow-xl border-[5px]  border-white top-[150px] left-1/2 
+                <img ng-src={`data:image/jpeg;base64,${userDetail?.avatar}`} alt="Avatar" className="z-10 shadow-xl border-[5px]  border-white top-[150px] left-1/2 
                                 transform -translate-x-1/2 absolute w-[250px] h-[250px] rounded-full mb-4 cursor-zoom-in bg-white" 
                                 onClick={handleShowAvatar}/>
 

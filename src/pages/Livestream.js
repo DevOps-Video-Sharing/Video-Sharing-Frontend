@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
-
+import NavbarApp from "../components/NavbarApp";
+import { ToastContainer } from "react-toastify";
 // Hàm tạo mã sự kiện ngẫu nhiên gồm 5 ký tự
 const generateEventCode = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -46,7 +47,13 @@ const Livestream = () => {
     console.log(streamUrl)
 
     return (
+        <div className=" bg-[#f0f4f9] h-screen "> 
+                    <ToastContainer position='bottom-right'/>
+            <NavbarApp/>
+            <div className='h-[60px]'></div>
+
         <div className="flex bg-[#f0f4f9] min-h-screen p-5">
+
             <div className="w-2/3 p-4 bg-white rounded-lg shadow-lg">
                 <h1 className="text-2xl font-bold mb-4">Cài đặt sự kiện phát trực tiếp</h1>
                 
@@ -72,6 +79,18 @@ const Livestream = () => {
 
                     </div>
                 </div>
+                    {/* Title */}
+                    <div className="mb-6">
+                        <label className="block text-gray-700 font-semibold mb-2">Tiêu đề sự kiện:</label>
+                        <input
+                            type="text"
+                            // value={eventTitle}
+                            // onChange={(e) => setEventTitle(e.target.value)}
+                            placeholder="Nhập tiêu đề cho sự kiện..."
+                            className="border border-gray-300 rounded-lg p-2 w-full"
+                        />
+                    </div>
+
                 
                 {/* Khung phát trực tiếp */}
                 <div className="aspect-w-16 aspect-h-9 bg-black mb-4 rounded-lg">
@@ -137,6 +156,8 @@ const Livestream = () => {
                 </div>
             </div>
         </div>
+        </div>
+
     );
 };
 

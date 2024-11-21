@@ -4,7 +4,9 @@ import { IoMdMenu } from "react-icons/io";
 import { LuMoveRight } from "react-icons/lu";
 import VideoComponent from '../components/VideoCom/VideoComponent';
 import Loading from '../components/Loading';
-
+import LivestreamImage from '../assets/images/livestream.png'
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
   const [videoIds, setVideoIds] = useState([]);
   const [values, setValueIds] = useState();
@@ -15,6 +17,12 @@ const Home = () => {
   const [videoHeight, setVideoHeight] = useState('auto');
 
   const [urlVideo, setUrlVideo] = useState()
+  const navigate = useNavigate();
+
+  const handleLivestreamClick = (streamName) => {
+    // Mở đường dẫn với tên stream hoặc ID stream, ví dụ `/watchlivestream/AGE1J`
+    navigate(`/watchlivestream/${streamName}`);
+  };
 
   // useEffect(() => {
   //   const fetchVideoIds = async () => {
@@ -142,6 +150,77 @@ const Home = () => {
     setIndexs( getSortedIndexes(values))
   },[values])
   const start = 4
+
+  const [liveStreams, setLiveStreams] = useState([]);
+  const [streamNames, setStreamNames] = useState([]);
+  useEffect(() => {
+    const fetchLiveStreams = async () => {
+      try {
+        const response = await fetch('http://192.168.120.213:13000/stat', {
+          headers: {
+            Accept: 'application/xml', // Yêu cầu server trả về XML
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch live streams');
+        }
+
+        const xmlText = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+
+        // Tìm tất cả các <name> trong <stream>
+        const streamElements = xmlDoc.getElementsByTagName('stream');
+        const names = [];
+        for (let i = 0; i < streamElements.length; i++) {
+          const nameElement = streamElements[i].getElementsByTagName('name')[0];
+          if (nameElement) {
+            names.push(nameElement.textContent);
+          }
+        }
+
+        console.log('Stream names:', names);
+        setStreamNames(names);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchLiveStreams();
+  }, []);
+  const xmlToJson = (xml) => {
+    const obj = {};
+    if (xml.nodeType === 1) { // Element
+      if (xml.attributes.length > 0) {
+        obj['@attributes'] = {};
+        for (let j = 0; j < xml.attributes.length; j++) {
+          const attribute = xml.attributes.item(j);
+          obj['@attributes'][attribute.nodeName] = attribute.nodeValue;
+        }
+      }
+    } else if (xml.nodeType === 3) { // Text
+      obj['#text'] = xml.nodeValue.trim();
+    }
+
+    // Process child nodes
+    if (xml.hasChildNodes()) {
+      for (let i = 0; i < xml.childNodes.length; i++) {
+        const item = xml.childNodes.item(i);
+        const nodeName = item.nodeName;
+        if (typeof obj[nodeName] === 'undefined') {
+          obj[nodeName] = xmlToJson(item);
+        } else {
+          if (!Array.isArray(obj[nodeName])) {
+            obj[nodeName] = [obj[nodeName]];
+          }
+          obj[nodeName].push(xmlToJson(item));
+        }
+      }
+    }
+    return obj;
+  };
+
   return (
     <div className=''>
       <div>
@@ -197,6 +276,40 @@ const Home = () => {
               <Loading/>
             )}
         </div>
+
+        <div className='flex items-center mb-3 pl-[20px] pt-[20px] w-3/5 text-black font-bold'>
+          <IoMdMenu className='cursor-pointer size-[25px]' />
+          <p className='ml-[10px] text-[#474747] text-[20px]'>Phat truc tiep</p>
+        </div>
+
+        {/* Livestream section */}
+        <div className='flex flex-wrap ml-2'>
+          {streamNames.length > 0 ? (
+            streamNames.map((stream, index) => (
+              <Link 
+                // to={`/watchlivestream/${stream.name}`}  // Thêm Link cho chuyển hướng
+                to={`/watchlivestream`}  // Thêm Link cho chuyển hướng
+
+                key={index}
+                className='flex flex-col items-center justify-center border border-gray-300 rounded-lg p-4 m-2 bg-white shadow-md w-[300px] cursor-pointer'
+              >
+                {/* Hình ảnh cho mỗi livestream */}
+                <img
+                  src={LivestreamImage}
+                  alt='Live Stream'
+                  className='w-16 h-16 object-cover mb-4'
+                />
+                <p className='font-bold text-lg text-[#474747]'>{stream.name}</p>
+                <p className='text-sm text-gray-500'>Clients: {stream.clients || 0}</p>
+                <p className='text-sm text-gray-500'>Bandwidth In: {stream.bw_in || 0} kbps</p>
+                <p className='text-sm text-gray-500'>Bandwidth Out: {stream.bw_out || 0} kbps</p>
+              </Link>
+            ))
+          ) : (
+            <Loading />
+          )}
+        </div>
+
       </div>
 
     </div>

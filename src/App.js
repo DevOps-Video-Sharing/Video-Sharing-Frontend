@@ -14,6 +14,7 @@ import ChangeProfile from './controller/ChangeProfile';
 import History from './pages/History';
 import Search from './pages/Search';
 import Livestream from './pages/Livestream';
+import WatchLiveStream from './pages/WatchLiveStream';
 function App() {
   useEffect(() => {
     document.title = "Video sharing";
@@ -34,6 +35,7 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route path="/search" element={<Search />} />
         <Route path="/livestream" element={<Livestream />} />
+        <Route path="/watchlivestream" element={<WatchLiveStream />}/>
       </Routes>
     </Router>
     );

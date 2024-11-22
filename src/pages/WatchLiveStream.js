@@ -6,6 +6,7 @@ import CopyButton from "../components/ButtonCustom/CopyButton";
 import ReactPlayer from "react-player";
 import { ToastContainer, toast } from "react-toastify";
 import { useParams } from 'react-router-dom';
+import avatar from '../assets/images/avar.jpg';
 const WatchLiveStream = () => {
   const [isStreamLive, setIsStreamLive] = useState(false); // Trạng thái livestream
   const [chatMessages, setChatMessages] = useState([]); // Phải là một mảng
@@ -13,6 +14,10 @@ const WatchLiveStream = () => {
   const { streamKey } = useParams();
   const streamUrl = `http://192.168.120.213:13000/hls/${streamKey}.m3u8`;
   const eventCode = streamKey; // Mã sự kiện mặc định
+  const [streamInfo, setStreamInfo] = useState({
+    titleLive: "",
+    userName: ""
+  });
   console.log(streamKey + "asddas");
   // Kiểm tra trạng thái livestream
   const checkStreamStatus = async () => {
@@ -88,6 +93,26 @@ const WatchLiveStream = () => {
       }
     }
   };
+  useEffect(() => {
+    // Gọi API để lấy thông tin stream
+    const fetchStreamInfo = async () => {
+      try {
+        const response = await fetch(`http://103.9.157.149:15001/streams/get/${streamKey}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch stream info");
+        }
+        const data = await response.json();
+        setStreamInfo({
+          titleLive: data.titleLive,
+          userName: data.userName
+        });
+      } catch (error) {
+        console.error("Error fetching stream info:", error);
+      }
+    };
+
+    fetchStreamInfo();
+  }, [streamKey]);
 
   return (
     <div className="bg-[#f0f4f9] h-screen">
@@ -117,23 +142,55 @@ const WatchLiveStream = () => {
             </div>
 
             {/* Thông tin livestream */}
-            <div className="mt-4 flex justify-between items-center">
-              <div className="flex space-x-4">
-                <button className="flex items-center text-gray-700 hover:text-blue-600">
-                  <AiOutlineLike className="mr-1" size={20} />
-                  <span>Like</span>
-                </button>
-                <button className="flex items-center text-gray-700 hover:text-red-600">
-                  <AiOutlineDislike className="mr-1" size={20} />
-                  <span>Dislike</span>
-                </button>
-                <button className="flex items-center text-gray-700 hover:text-green-600">
-                  <CiShare1 className="mr-1" size={20} />
-                  <span>Share</span>
-                </button>
+            <div className="mt-4">
+              {/* Title */}
+              <h2 className="font-medium font-roboto my-[10px] flex gap-3  bg-white  text-[24px]">{streamInfo.titleLive || "Loading title..."}</h2>
+            <hr></hr>
+              {/* User */}
+              {/* User Info */}
+              <div className="flex items-center mt-2 justify-between">
+            {/* Avatar và Thông tin người dùng */}
+            <div className="flex items-center space-x-3">
+              {/* Avatar */}
+              <img
+                src={avatar}
+                alt="User Avatar"
+                className="w-12 h-12 rounded-full object-cover"
+              />
+              <div>
+                {/* User Name */}
+                <p className="text-[20px] font-bold cursor-pointer px-1 py-1 rounded-[10px] hover:bg-[#dadada]">
+                  {streamInfo.userName || "Loading user..."}
+                </p>
+                {/* Followers */}
+                <p className="font-roboto text-gray-600 text-sm">
+                  Theo dõi: 0
+                </p>
               </div>
-              <CopyButton textToCopy={streamUrl} />
+              <button className="bg-red-500 text-white font-medium px-4 py-2 rounded-md hover:bg-red-600">
+                Theo dõi
+              </button>
             </div>
+
+            {/* Các nút hành động */}
+            <div className="flex items-center space-x-4">
+              {/* Nút Theo dõi */}
+
+              {/* Nút Like */}
+              <button className="flex items-center text-gray-700 hover:text-blue-600">
+                <AiOutlineLike className="mr-1" size={20} />
+                <span>Like</span>
+              </button>
+
+              {/* Nút Share */}
+              <button className="flex items-center text-gray-700 hover:text-green-600">
+                <CiShare1 className="mr-1" size={20} />
+                <span>Share</span>
+              </button>
+            </div>
+            </div>
+            </div>
+
           </div>
 
           {/* Chat box */}

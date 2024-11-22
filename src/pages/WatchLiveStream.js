@@ -5,14 +5,15 @@ import { CiShare1 } from "react-icons/ci";
 import CopyButton from "../components/ButtonCustom/CopyButton";
 import ReactPlayer from "react-player";
 import { ToastContainer, toast } from "react-toastify";
-
+import { useParams } from 'react-router-dom';
 const WatchLiveStream = () => {
   const [isStreamLive, setIsStreamLive] = useState(false); // Trạng thái livestream
   const [chatMessages, setChatMessages] = useState([]); // Phải là một mảng
   const [message, setMessage] = useState(""); // Tin nhắn hiện tại
-  const streamUrl = `http://192.168.120.213:13000/hls/2DEKS.m3u8`;
-  const eventCode = "event123"; // Mã sự kiện mặc định
-
+  const { streamKey } = useParams();
+  const streamUrl = `http://192.168.120.213:13000/hls/${streamKey}.m3u8`;
+  const eventCode = streamKey; // Mã sự kiện mặc định
+  console.log(streamKey + "asddas");
   // Kiểm tra trạng thái livestream
   const checkStreamStatus = async () => {
     try {
@@ -27,7 +28,7 @@ const WatchLiveStream = () => {
   // Lấy danh sách tin nhắn từ API
   const fetchChatMessages = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_CHAT}/chat/event123`);
+      const response = await fetch(`${process.env.REACT_APP_API_CHAT}/chat/${streamKey}`);
       
       // Kiểm tra nếu không phải là JSON hợp lệ, có thể là HTML do lỗi
       const text = await response.text(); // Đọc phản hồi dưới dạng văn bản

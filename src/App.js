@@ -36,6 +36,8 @@ function App() {
         <Route path="/search" element={<Search />} />
         <Route path="/livestream" element={<Livestream />} />
         <Route path="/watchlivestream" element={<WatchLiveStream />}/>
+        <Route path="/watchlivestream/:streamKey" element={<WatchLiveStream />}/>
+
       </Routes>
     </Router>
     );

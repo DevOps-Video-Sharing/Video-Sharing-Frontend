@@ -4,6 +4,7 @@ import { IoMdMenu } from "react-icons/io";
 import VideoComponent from '../components/VideoCom/VideoComponent';
 import Loading from '../components/Loading';
 import ImageLiveStream from '../assets/images/livestream.png';
+import WatchLiveStreamComponent from '../components/VideoCom/WatchLiveStreamComponent';
 const Home = () => {
   const [videoIds, setVideoIds] = useState([]);
   const [values, setValueIds] = useState([]);
@@ -136,7 +137,7 @@ const Home = () => {
       <div className='flex flex-wrap ml-2'>
         {livestreams.length > 0 ? (
           livestreams.map((stream, index) => (
-            <VideoComponent
+            <WatchLiveStreamComponent
               wi={405}
               key={stream.streamKey}
               img={ImageLiveStream}
@@ -144,7 +145,7 @@ const Home = () => {
               username={stream.userName}
               timestamp=""
               view=""
-              videoId={stream.streamKey}
+              streamKey={stream.streamKey}
               userid=""
             />
           ))

@@ -114,7 +114,7 @@ const MonoComment = ({ comment, fetchComments }) => {
                 <img src={`data:image/jpeg;base64,${dataInfor?.avatar}`} alt='Avatar' className="w-[30px] h-[30px] rounded-[50%]" />
                 <div className="mx-2 mr-5">
                     <p className="font-bold">{comment.userName}</p>
-                    <p>{comment.text}</p>
+                    <p>{comment.sanitizedText}</p>
                     
                     <div className="flex gap-3 items-center">
                         <div className="flex items-center cursor-pointer" onClick={handleAction}>

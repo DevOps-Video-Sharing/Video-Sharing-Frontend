@@ -66,7 +66,11 @@ const WatchLiveStream = () => {
 
   useEffect(() => {
     checkStreamStatus(); // Kiểm tra trạng thái khi tải trang
-    fetchChatMessages(); // Lấy tin nhắn khi tải trang
+    const interval = setInterval(() => {
+      fetchChatMessages();
+    }, 2000); // Fetch mỗi 5 giây
+  
+    return () => clearInterval(interval); // Dọn dẹp khi component bị hủy
   }, [streamUrl]);
   const username = localStorage.getItem("userName");
   // Xử lý gửi tin nhắn

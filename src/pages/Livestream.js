@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 import NavbarApp from "../components/NavbarApp";
 import { ToastContainer } from "react-toastify";
+import axios from "axios";
 // Hàm tạo mã sự kiện ngẫu nhiên gồm 5 ký tự
 const generateEventCode = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -24,6 +25,7 @@ const Livestream = () => {
         // Lưu mã sự kiện vào localStorage khi eventCode thay đổi
         localStorage.setItem("eventCode", eventCode);
     }, [eventCode]);
+    const userName = localStorage.getItem("userName") || "defaultUser"; // Lấy userName từ localStorage
 
     // Hàm kiểm tra trạng thái của livestream
     const checkStreamStatus = async () => {
@@ -84,16 +86,51 @@ const Livestream = () => {
         }
     };
 
-    // Hàm xử lý khi người dùng gửi tin nhắn
-    const handleSendMessage = () => {
-        if (message.trim()) {
-            setChatMessages([...chatMessages, { text: message, timestamp: new Date().toLocaleTimeString() }]);
-            setMessage('');
-        }
-    };
+
 
     // URL của livestream (dựa vào eventCode làm stream key)
     const streamUrl = `http://192.168.120.213:13000/hls/${eventCode}.m3u8`;
+
+
+    const handleSendMessage = async () => {
+        if (!message.trim()) return;
+
+        try {
+            const payload = {
+                username: userName,
+                message,
+                eventCode,
+            };
+
+            await axios.post(`${process.env.REACT_APP_API_CHAT}/chat`, payload); // Thay đổi URL API nếu cần
+            setMessage(''); // Xóa nội dung ô nhập tin nhắn
+            fetchMessages(); // Lấy lại danh sách tin nhắn
+        } catch (error) {
+            console.error('Lỗi khi gửi tin nhắn:', error);
+        }
+    };
+
+    // Hàm lấy tin nhắn từ API
+    const fetchMessages = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_CHAT}/chat/${eventCode}`); // Thay đổi URL API nếu cần
+            setChatMessages(response.data.messages);
+        } catch (error) {
+            console.error('Lỗi khi lấy tin nhắn:', error);
+        }
+    };
+
+    // Gọi API lấy tin nhắn khi component được tải
+    useEffect(() => {
+        fetchMessages();
+        // Thiết lập Polling: Gọi lại API mỗi 5 giây
+        const interval = setInterval(() => {
+            fetchMessages();
+        }, 2000);
+
+        // Cleanup interval khi component unmount
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className=" bg-[#f0f4f9] h-screen "> 
@@ -173,14 +210,14 @@ const Livestream = () => {
                 <div className="w-1/3 ml-4 p-4 bg-white rounded-lg shadow-lg flex flex-col">
                     <h2 className="text-xl font-bold mb-4">Trò chuyện trực tiếp</h2>
                     
-                    {/* Hiển thị tin nhắn trò chuyện */}
+                    {/* Hiển thị tin nhắn */}
                     <div className="flex-grow overflow-y-auto mb-4 border rounded-lg p-2 bg-gray-50">
                         {chatMessages.length === 0 ? (
                             <p className="text-gray-500 text-center">Chưa có tin nhắn nào.</p>
                         ) : (
                             chatMessages.map((msg, index) => (
                                 <div key={index} className="mb-2">
-                                    <p className="text-sm"><span className="font-semibold">Người dùng:</span> {msg.text}</p>
+                                    <p className="text-sm"><span className="font-semibold">{msg.username}:</span> {msg.message}</p>
                                     <p className="text-xs text-gray-400">{msg.timestamp}</p>
                                 </div>
                             ))

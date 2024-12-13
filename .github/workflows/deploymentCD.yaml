@@ -1,0 +1,59 @@
+name: Continuous Deployment for Frontend
+
+on:
+  workflow_run:
+    workflows: ["Continuous Integration for Frontend"]
+    types:
+      - completed
+  
+
+jobs:
+  deploy:
+    name: Deploy to GKE Autopilot
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build the application
+        run: |
+          npm ci
+          npm run build 
+        env:
+          CI: ""
+
+      - name: Install OpenVPN
+        run: sudo apt-get update && sudo apt-get install -y openvpn
+    
+      - name: Connect to VPN
+        env:
+          VPN_USERNAME: ${{ secrets.VPN_USERNAME }}
+          VPN_PASSWORD: ${{ secrets.VPN_PASSWORD }}
+        run: |
+          echo "${{ secrets.VPN_PROFILE_BASE64 }}" | base64 --decode > profile-559.ovpn
+          echo -e "${VPN_USERNAME}\n${VPN_PASSWORD}" > vpn-auth.txt
+          sudo openvpn --config profile-559.ovpn --auth-user-pass vpn-auth.txt --daemon
+          sleep 10
+          rm vpn-auth.txt
+          rm profile-559.ovpn
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/K8S
+            sudo kubectl apply -f react-app-deployment.yaml
+        
+  notifications:
+      needs: deploy
+      uses: ./.github/workflows/notifyCD.yaml
+      secrets:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

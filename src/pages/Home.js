@@ -11,14 +11,17 @@ const Home = () => {
   const [videoUrls, setVideoUrls] = useState([]);
   const [livestreams, setLivestreams] = useState([]); // State lưu danh sách livestreams
   const [indexs, setIndexs] = useState([]);
-
+  const UserId = localStorage.getItem('userToken');
   const start = 4;
 
   useEffect(() => {
     // Fetch video IDs and details
     const fetchVideoIds = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/video/listIdThumbnail`);
+        // const response = await fetch(`${process.env.REACT_APP_API_URL}/video/listIdThumbnail`);
+        // const response = await fetch(`${process.env.REACT_APP_API_URL}/video/getThumbnailsByUserGenres/${UserId}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/video/getThumbnailsByUserGenres2/${UserId}`);
+
         if (!response.ok) throw new Error('Failed to fetch video ids');
         const ids = await response.json();
         setVideoIds(ids);
@@ -81,7 +84,7 @@ const Home = () => {
 
       <div className='flex items-center my-3 pl-[20px] pt-[20px] w-3/5 text-black font-bold'>
         <IoMdMenu className='cursor-pointer size-[25px]' />
-        <p className='ml-[10px] text-[#474747] text-[20px]'>Top video tiêu biểu</p>
+        <p className='ml-[10px] text-[#474747] text-[20px]'>Video dành cho bạn</p>
       </div>
 
       <div className='flex relative ml-2 flex-wrap'>

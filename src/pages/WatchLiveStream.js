@@ -101,7 +101,7 @@ const WatchLiveStream = () => {
     // Gọi API để lấy thông tin stream
     const fetchStreamInfo = async () => {
       try {
-        const response = await fetch(`http://192.168.120.213:15001/streams/get/${streamKey}`);
+        const response = await fetch(`http://103.9.157.149:15001/streams/get/${streamKey}`);
         if (!response.ok) {
           throw new Error("Failed to fetch stream info");
         }
@@ -198,7 +198,7 @@ const WatchLiveStream = () => {
           </div>
 
           {/* Chat box */}
-          <div className="w-full md:w-1/3 bg-white rounded-lg shadow-lg flex flex-col">
+          <div className="w-full md:w-1/3 bg-white rounded-lg shadow-lg flex flex-col" style={{ height: '700px' }}>
             <h2 className="text-xl font-bold mb-4 p-4">Trò chuyện trực tiếp</h2>
 
             {/* Hiển thị tin nhắn trò chuyện */}

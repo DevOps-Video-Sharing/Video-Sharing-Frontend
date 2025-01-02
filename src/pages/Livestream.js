@@ -177,7 +177,7 @@ const Livestream = () => {
                     </div>
 
                     {/* Khung phát trực tiếp */}
-                    <div className="aspect-w-16 aspect-h-9 bg-black mb-4 rounded-lg">
+                    <div className="aspect-w-16 aspect-h-9 bg-black mb-4 rounded-lg " >
                         {/* Hiển thị video phát trực tiếp */}
                         {isStreamLive ? (
                             <ReactPlayer
@@ -207,7 +207,7 @@ const Livestream = () => {
                 </div>
 
                 {/* Thanh trò chuyện trực tiếp */}
-                <div className="w-1/3 ml-4 p-4 bg-white rounded-lg shadow-lg flex flex-col">
+                <div className="w-1/3 ml-4 p-4 bg-white rounded-lg shadow-lg flex flex-col" style={{ height: '700px' }}>
                     <h2 className="text-xl font-bold mb-4">Trò chuyện trực tiếp</h2>
                     
                     {/* Hiển thị tin nhắn */}

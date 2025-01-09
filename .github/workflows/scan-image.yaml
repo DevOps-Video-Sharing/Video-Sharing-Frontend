@@ -34,7 +34,7 @@ jobs:
             "",
             "| Vulnerability ID | Package | Version | Severity | Description |",
             "|------------------|---------|---------|----------|-------------|",
-            (.Results[] | .Vulnerabilities[] | select(hr(.Severity)) | to_md),
+            (.Results // [] | .[] | .Vulnerabilities[]? | select(hr(.Severity)) | to_md),
             ""
           ] | join("\n")
           ' scan-results.json > vulnerability-report.md

@@ -101,7 +101,7 @@ const WatchLiveStream = () => {
     // Gọi API để lấy thông tin stream
     const fetchStreamInfo = async () => {
       try {
-        const response = await fetch(`http://192.168.120.213:15001/streams/get/${streamKey}`);
+        const response = await fetch(`${process.env.REACT_APP_API_CHAT}/streams/get/${streamKey}`);
         if (!response.ok) {
           throw new Error("Failed to fetch stream info");
         }
